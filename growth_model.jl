@@ -2,7 +2,7 @@ using CairoMakie
 
 
 # Production function
-produce(cap, tech, pop, cap_elas = 0.3) = cap^cap_elas * (tech*pop)^(1-cap_elas)
+produce(cap, tech, pop, cap_elas = 0.3) = (cap^cap_elas) * (tech*pop)^(1-cap_elas)
 
 # Laws of motion
 motion_capital(cap, inc, dep = 0.5, savings = 0.2) = (1-dep)*cap + savings*inc
@@ -35,14 +35,19 @@ function simulate_growth(periods = 10, initial_cap = 0.1, initial_pop = 1, initi
         end
     end
     
-    return Y, K
+    k = K ./ (A.*N)
+
+    return Y, k
 end
 
+
+# Simulate model
 scot_cap = 0.167
 eng_cap = 0.167 / 2
 
-Y_england, K_england = simulate_growth(10, eng_cap, 1, 1)
-Y_scotland, K_scotland = simulate_growth(10, scot_cap, 1, 1)
+Y_england, k_england = simulate_growth(10, eng_cap)
+Y_scotland, k_scotland = simulate_growth(10, scot_cap)
+
 
 # Plot evolution of income
 lines(1:10, Y_england, label = "England")
@@ -51,4 +56,7 @@ axislegend(position = :rb)
 current_figure()
 
 # Plot evolution of capital
-lines(1:10, K_scotland)
+lines(1:10, k_england, label = "England")
+lines!(1:10, k_scotland, label = "Scotland")
+axislegend(position = :rb)
+current_figure()
